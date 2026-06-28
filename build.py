@@ -288,6 +288,50 @@ def render_topics(current_path: str) -> str:
     )
 
 
+def _segs(path):
+    return [s for s in path.split("/") if s]
+
+
+def _parent_of(path):
+    s = _segs(path)
+    if len(s) <= 1:
+        return None
+    return "/".join(s[:-1]) + "/"
+
+
+# 부모 경로 → 직속 하위 페이지 목록 (지역 계층 자동 내부링크용)
+CHILDREN = {}
+for _pg in PAGES:
+    _par = _parent_of(_pg["path"])
+    if _par is not None:
+        CHILDREN.setdefault(_par, []).append((_pg["h1"], _pg["path"]))
+
+
+def render_children(path: str) -> str:
+    """구/시 페이지에서 직속 하위 지역(행정구·행정동)으로 내려가는 롱테일 내부링크.
+    도어웨이 방지: 각 하위 페이지는 고유 본문을 가지며 양방향으로 연결된다."""
+    kids = CHILDREN.get(path)
+    if not kids:
+        return ""
+    s = _segs(path)
+    # 지역(서울·경기·인천) 하위 페이지에만, 허브/그룹 페이지는 제외
+    if not s or s[0] not in ("seoul", "gyeonggi", "incheon"):
+        return ""
+    if len(s) < 2 or "group" in s:
+        return ""
+    # 자식이 또 하위(동)를 가지면 그 자식들은 '행정구', 아니면 '행정동·세부지역'
+    label = "행정구" if any(p in CHILDREN for _, p in kids) else "행정동·세부지역"
+    lis = "".join(
+        f'<li><a href="/{p}">{h1} 안내</a></li>'
+        for h1, p in sorted(kids, key=lambda x: x[0])
+    )
+    return (
+        f'<nav class="area-children" aria-label="하위 지역 안내">'
+        f"<h2>하위 {label} 바로가기</h2>"
+        f'<ul class="area-children-grid">{lis}</ul></nav>'
+    )
+
+
 def render_banner() -> str:
     """히어로/헤더 바로 아래 노출되는 대표 이미지 배너 (전 페이지 공통)."""
     return (
@@ -377,7 +421,7 @@ def render_page(page: dict) -> str:
 
     # 화면에 보이는 고객 후기(Review/AggregateRating 스키마와 일치) + 주제별 롱테일 내부링크
     # 본문 뒤에 붙이며, noindex 판정용 text_length 에는 포함되지 않는다.
-    body = body + render_pricing() + render_reviews() + render_topics(path)
+    body = body + render_children(path) + render_pricing() + render_reviews() + render_topics(path)
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
