@@ -307,7 +307,7 @@ for _pg in PAGES:
         CHILDREN.setdefault(_par, []).append((_pg["h1"], _pg["path"]))
 
 
-def render_children(path: str) -> str:
+def render_children(path: str, h1: str = "") -> str:
     """구/시 페이지에서 직속 하위 지역(행정구·행정동)으로 내려가는 롱테일 내부링크.
     도어웨이 방지: 각 하위 페이지는 고유 본문을 가지며 양방향으로 연결된다."""
     kids = CHILDREN.get(path)
@@ -319,15 +319,17 @@ def render_children(path: str) -> str:
         return ""
     if len(s) < 2 or "group" in s:
         return ""
-    # 자식이 또 하위(동)를 가지면 그 자식들은 '행정구', 아니면 '행정동·세부지역'
-    label = "행정구" if any(p in CHILDREN for _, p in kids) else "행정동·세부지역"
+    # 자식이 또 하위(동)를 가지면 그 자식들은 '행정구', 아니면 '행정동'
+    label = "행정구" if any(p in CHILDREN for _, p in kids) else "행정동"
+    area = h1.split()[0] if h1 else ""
+    heading = f"{area} {label} 바로가기".strip()
     lis = "".join(
-        f'<li><a href="/{p}">{h1} 안내</a></li>'
-        for h1, p in sorted(kids, key=lambda x: x[0])
+        f'<li><a href="/{p}">{ch1} 안내</a></li>'
+        for ch1, p in sorted(kids, key=lambda x: x[0])
     )
     return (
-        f'<nav class="area-children" aria-label="하위 지역 안내">'
-        f"<h2>하위 {label} 바로가기</h2>"
+        f'<nav class="area-children" aria-label="{label} 안내">'
+        f"<h2>{heading}</h2>"
         f'<ul class="area-children-grid">{lis}</ul></nav>'
     )
 
@@ -421,7 +423,7 @@ def render_page(page: dict) -> str:
 
     # 화면에 보이는 고객 후기(Review/AggregateRating 스키마와 일치) + 주제별 롱테일 내부링크
     # 본문 뒤에 붙이며, noindex 판정용 text_length 에는 포함되지 않는다.
-    body = body + render_children(path) + render_pricing() + render_reviews() + render_topics(path)
+    body = render_children(path, h1) + body + render_pricing() + render_reviews() + render_topics(path)
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
