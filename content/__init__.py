@@ -1,6 +1,7 @@
 from . import (main, safe_booking, report, use_cases, policy,
                seoul, gyeonggi, incheon, stations,
-               seoul_dong, gyeonggi_dong, incheon_dong)
+               seoul_dong, gyeonggi_dong, incheon_dong,
+               seoul_dong2, gyeonggi_dong2, incheon_dong2)
 
 PAGES = (
     [main.PAGE]
@@ -15,4 +16,7 @@ PAGES = (
     + seoul_dong.PAGES
     + gyeonggi_dong.PAGES
     + incheon_dong.PAGES
+    + seoul_dong2.PAGES
+    + gyeonggi_dong2.PAGES
+    + incheon_dong2.PAGES
 )
