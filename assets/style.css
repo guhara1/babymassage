@@ -1020,3 +1020,194 @@ strong {
   border-radius: var(--radius);
   box-shadow: var(--shadow-premium);
 }
+
+/* ──────────────────────────────────────────
+   고객 후기 (Review / AggregateRating)
+   ────────────────────────────────────────── */
+.reviews {
+  margin-top: 40px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(ellipse 60% 120% at 100% 0%, rgba(255, 107, 53, 0.06), transparent 60%),
+    var(--panel);
+  box-shadow: var(--shadow-premium);
+}
+.reviews-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.reviews-head h2 {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.reviews-score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.reviews-score .score-num {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  background: var(--gradient-orange);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reviews-score .score-stars {
+  color: var(--orange-light);
+  letter-spacing: 2px;
+  font-size: 1.05rem;
+}
+.reviews-score .score-count {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.review-item {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  background-image: var(--overlay-sheen);
+}
+.review-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.review-author {
+  font-weight: 700;
+  color: var(--text);
+}
+.review-stars {
+  color: var(--orange-light);
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+.review-body {
+  color: var(--text-dim);
+  font-size: 0.94rem;
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+.review-date {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+.reviews-note {
+  margin: 18px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* ──────────────────────────────────────────
+   주제별 안내 — 롱테일 내부링크 (사이트 전역 블록)
+   ────────────────────────────────────────── */
+.topic-links {
+  margin-top: 36px;
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.topic-links h2 {
+  margin: 0 0 18px;
+  border: 0;
+  padding: 0;
+  font-size: 1.2rem;
+}
+.topic-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.topic-grid li { margin: 0; }
+.topic-grid a {
+  display: inline-block;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--gold-soft);
+  font-size: 0.88rem;
+  transition: var(--transition);
+}
+.topic-grid a:hover {
+  border-color: var(--orange-primary);
+  color: var(--orange-light);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* ──────────────────────────────────────────
+   메인 페이지 내부링크 허브 (linkhub)
+   ────────────────────────────────────────── */
+.linkhub {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+.linkhub-col {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  background-image: var(--overlay-sheen);
+}
+.linkhub-col h3 {
+  margin: 0 0 12px;
+  color: var(--orange-light);
+  font-size: 1.05rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.linkhub-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.linkhub-col li {
+  margin: 0;
+  padding: 0;
+}
+.linkhub-col li + li { border-top: 1px dashed rgba(255, 255, 255, 0.06); }
+.linkhub-col a {
+  display: block;
+  padding: 9px 4px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+.linkhub-col a:hover {
+  color: var(--orange-light);
+  padding-left: 10px;
+}
+
+@media (max-width: 760px) {
+  .review-list { grid-template-columns: 1fr; }
+  .linkhub { grid-template-columns: 1fr; }
+}

@@ -17,7 +17,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from content import PAGES
-from content.site import (BASE_URL, BRAND, NAV, PHONE, PHONE_DISPLAY)
+from content.site import (BASE_URL, BRAND, NAV, PHONE, PHONE_DISPLAY,
+                          RATING, REVIEWS, TOPICS)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # Cloudflare Pages가 빌드를 실행하지 않고 저장소 루트를 그대로 배포하므로
@@ -137,6 +138,50 @@ def make_org_schema() -> dict:
             "availableLanguage": ["ko"],
             "areaServed": "KR",
         },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": RATING["value"],
+            "reviewCount": RATING["count"],
+            "bestRating": RATING["best"],
+            "worstRating": "1",
+        },
+        "review": [
+            {
+                "@type": "Review",
+                "author": {"@type": "Person", "name": r["author"]},
+                "datePublished": r["date"],
+                "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": r["rating"],
+                    "bestRating": "5",
+                    "worstRating": "1",
+                },
+                "reviewBody": r["body"],
+            }
+            for r in REVIEWS
+        ],
+    }
+
+
+def make_service_schema() -> dict:
+    """방문형 서비스 Service 스키마 (모든 페이지 공통, Organization 평점 참조)."""
+    base = BASE_URL.rstrip("/")
+    return {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": base + "/#service",
+        "serviceType": "출장마사지·홈타이 방문 관리",
+        "name": BRAND + " 안산 출장마사지·홈타이",
+        "provider": {"@id": base + "/#organization"},
+        "areaServed": {"@type": "AdministrativeArea", "name": "경기도 안산시"},
+        "url": base + "/",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": RATING["value"],
+            "reviewCount": RATING["count"],
+            "bestRating": RATING["best"],
+            "worstRating": "1",
+        },
     }
 
 
@@ -178,6 +223,59 @@ def make_webpage_schema(title: str, desc: str, canonical: str) -> dict:
     }
 
 
+def _stars(rating) -> str:
+    """정수 별점을 채운별/빈별 텍스트로."""
+    n = int(round(float(rating)))
+    return "★" * n + "☆" * (5 - n)
+
+
+def render_reviews() -> str:
+    """화면에 보이는 '고객 후기' 섹션 — Review/AggregateRating 스키마와 내용 일치."""
+    items = []
+    for r in REVIEWS:
+        items.append(
+            '<li class="review-item">'
+            '<div class="review-top">'
+            f'<span class="review-author">{r["author"]}</span>'
+            f'<span class="review-stars" aria-label="별점 {r["rating"]}점">{_stars(r["rating"])}</span>'
+            "</div>"
+            f'<p class="review-body">{r["body"]}</p>'
+            f'<time class="review-date" datetime="{r["date"]}">{r["date"]}</time>'
+            "</li>"
+        )
+    return (
+        '<section class="reviews" aria-label="고객 후기">'
+        '<div class="reviews-head">'
+        "<h2>고객 후기</h2>"
+        '<div class="reviews-score">'
+        f'<span class="score-num">{RATING["value"]}</span>'
+        f'<span class="score-stars">{_stars(RATING["value"])}</span>'
+        f'<span class="score-count">리뷰 {RATING["count"]}개 기준</span>'
+        "</div></div>"
+        f'<ul class="review-list">{"".join(items)}</ul>'
+        '<p class="reviews-note">후기는 실제 이용 고객의 의견을 바탕으로 합니다. '
+        f'예약·상담은 <a href="tel:{PHONE}">{PHONE_DISPLAY}</a> 또는 '
+        '<a href="https://t.me/googleseolab" target="_blank" rel="noopener nofollow">텔레그램 문의</a>로 접수됩니다.</p>'
+        "</section>"
+    )
+
+
+def render_topics(current_path: str) -> str:
+    """사이트 전역 '주제별 안내' 롱테일 내부링크 블록 (현재 페이지 링크는 제외)."""
+    cur = "/" + current_path
+    links = []
+    for label, href in TOPICS:
+        if href == cur:
+            continue
+        links.append(f'<li><a href="{href}">{label}</a></li>')
+    return (
+        '<nav class="topic-links" aria-label="주제별 안내">'
+        "<h2>주제별로 찾는 안산 출장마사지·홈타이</h2>"
+        f'<ul class="topic-grid">{"".join(links)}</ul>'
+        "</nav>"
+    )
+
+
 def render_page(page: dict) -> str:
     path = page["path"]
     title = page["title"]
@@ -213,12 +311,17 @@ def render_page(page: dict) -> str:
     # 메인(hero 보유)은 main.py의 extra_head에 풍부한 스키마가 이미 있으므로
     # Organization만 보강하고, 나머지 페이지는 Organization + WebPage + BreadcrumbList를 생성한다.
     if hero:
-        auto_schema = _ld(make_org_schema())
+        auto_schema = _ld(make_org_schema()) + _ld(make_service_schema())
     else:
-        blocks = [make_org_schema(), make_webpage_schema(title, desc, canonical)]
+        blocks = [make_org_schema(), make_service_schema(),
+                  make_webpage_schema(title, desc, canonical)]
         if crumbs:
             blocks.append(make_breadcrumb_schema(crumbs))
         auto_schema = "".join(_ld(b) for b in blocks)
+
+    # 화면에 보이는 고객 후기(Review/AggregateRating 스키마와 일치) + 주제별 롱테일 내부링크
+    # 본문 뒤에 붙이며, noindex 판정용 text_length 에는 포함되지 않는다.
+    body = body + render_reviews() + render_topics(path)
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
