@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""안산 출장마사지 — 정적 사이트 빌드 스크립트.
+"""수도권(서울·경기·인천) 출장마사지 — 정적 사이트 빌드 스크립트.
 
 content/ 패키지의 페이지 정의를 읽어 정적 HTML을 생성한다.
 
@@ -282,7 +282,7 @@ def render_topics(current_path: str) -> str:
         links.append(f'<li><a href="{href}">{label}</a></li>')
     return (
         '<nav class="topic-links" aria-label="주제별 안내">'
-        "<h2>주제별로 찾는 안산 출장마사지·홈타이</h2>"
+        "<h2>주제별로 찾는 수도권 출장마사지·홈타이</h2>"
         f'<ul class="topic-grid">{"".join(links)}</ul>'
         "</nav>"
     )
