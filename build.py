@@ -182,6 +182,18 @@ def make_service_schema() -> dict:
             "bestRating": RATING["best"],
             "worstRating": "1",
         },
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "KRW",
+            "lowPrice": "90000",
+            "highPrice": "180000",
+            "offerCount": "3",
+            "offers": [
+                {"@type": "Offer", "name": "60분 코스", "price": "90000", "priceCurrency": "KRW"},
+                {"@type": "Offer", "name": "90분 코스", "price": "150000", "priceCurrency": "KRW"},
+                {"@type": "Offer", "name": "120분 코스", "price": "180000", "priceCurrency": "KRW"},
+            ],
+        },
     }
 
 
@@ -276,6 +288,50 @@ def render_topics(current_path: str) -> str:
     )
 
 
+def render_banner() -> str:
+    """히어로/헤더 바로 아래 노출되는 대표 이미지 배너 (전 페이지 공통)."""
+    return (
+        '<div class="page-banner-wrap"><div class="container">'
+        '<figure class="page-banner">'
+        '<img src="/assets/spa-hero.webp" width="1280" height="540" '
+        'decoding="async" '
+        'alt="간다GO 서울·경기·인천 수도권 출장마사지·홈타이 방문 관리">'
+        '</figure></div></div>'
+    )
+
+
+def _price_card(name, price, dur, desc, featured=False) -> str:
+    cls = "price-card featured" if featured else "price-card"
+    badge = '<span class="price-badge">추천</span>' if featured else ""
+    return (
+        f'<div class="{cls}">{badge}'
+        f'<p class="price-name">{name}</p>'
+        f'<p class="price-amount">{price}<span class="won">원</span></p>'
+        f'<p class="price-dur">{dur}</p>'
+        f'<p class="price-desc">{desc}</p>'
+        f'<a class="price-cta" href="/contact/">예약 문의</a>'
+        "</div>"
+    )
+
+
+def render_pricing() -> str:
+    """코스 시간별 기본 요금표 (전 페이지 공통). 본문 색인 글자수에서는 제외된다."""
+    return (
+        '<section class="pricing">'
+        '<div class="pricing-head"><h2>코스 시간으로 보는 기본 요금</h2>'
+        '<p class="pricing-sub">관리 시간(60·90·120분)을 기준으로 정리한 기본 금액입니다. '
+        '표시되지 않은 별도 비용은 두지 않는 것을 원칙으로 안내합니다.</p></div>'
+        '<div class="price-grid">'
+        + _price_card("60분 코스", "90,000", "60분", "핵심 부위 위주 가벼운 이완")
+        + _price_card("90분 코스", "150,000", "90분", "전신 균형 표준 구성·아로마 포함", featured=True)
+        + _price_card("120분 코스", "180,000", "120분", "구석구석 집중하는 프리미엄 구성")
+        + "</div>"
+        '<p class="pricing-note">방문 지역과 시간대, 이동 거리에 따라 최종 금액은 통화 시 확정됩니다. '
+        '<a href="/safe-booking/travel-fee/">요금·예약 기준 자세히 보기 →</a></p>'
+        "</section>"
+    )
+
+
 def render_page(page: dict) -> str:
     path = page["path"]
     title = page["title"]
@@ -321,7 +377,7 @@ def render_page(page: dict) -> str:
 
     # 화면에 보이는 고객 후기(Review/AggregateRating 스키마와 일치) + 주제별 롱테일 내부링크
     # 본문 뒤에 붙이며, noindex 판정용 text_length 에는 포함되지 않는다.
-    body = body + render_reviews() + render_topics(path)
+    body = body + render_pricing() + render_reviews() + render_topics(path)
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
@@ -368,7 +424,7 @@ def render_page(page: dict) -> str:
     <div class="nav-inner"><ul class="nav-list">{render_nav(path)}</ul></div>
   </nav>
 </header>
-{page_head}<main class="site-main">
+{page_head}{render_banner()}<main class="site-main">
   <div class="container {layout_cls}">
     {toc_html}
     <article class="page-content">
