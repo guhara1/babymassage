@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ansan-massage1.pages.dev/sitemap.xml
+Sitemap: https://sudogwon-massage.pages.dev/sitemap.xml

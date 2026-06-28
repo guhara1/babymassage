@@ -1,67 +1,47 @@
 import json
-from .site import BRAND, BASE_URL, PHONE
+from .site import BRAND, BASE_URL
 
 _BASE = BASE_URL.rstrip("/")
 
 # 메타 설명 (80자 이내)
-DESC = "안산 출장마사지·홈타이 예약 전 중앙동, 고잔동, 초지동, 상록수, 선부동 생활권을 확인하세요."
+DESC = "서울·경기·인천 출장마사지·홈타이 예약 전 방문 지역, 이용 장소, 개인정보 기준, 추가 이동비를 안내합니다."
 
-# 자주 묻는 질문 (FAQ 스키마)
+# 자주 묻는 질문 (FAQ 스키마 + 화면 공용)
 _FAQ = [
-    ("안산 출장마사지는 어떤 서비스인가요?",
-     "방문형 마사지 서비스로, 고객의 자택, 숙소, 오피스텔 등으로 전문가가 방문하여 관리하는 서비스입니다. 상록구와 단원구 전지역으로 방문 가능합니다."),
-
-    ("상록구와 단원구의 생활권 차이가 뭔가요?",
-     "상록구는 상록수역, 한대앞역, 본오동, 사동 중심의 북동부 생활권이고, 단원구는 중앙역, 고잔역, 초지역, 안산역 중심의 남서부·중심권 생활권입니다."),
-
+    ("수도권 출장마사지는 어떤 서비스인가요?",
+     "고객의 자택·숙소·오피스텔 등으로 전문가가 방문하여 관리하는 방문형 서비스입니다. 서울·경기·인천 주요 생활권으로 방문 가능하며, 예약 전 방문 가능 지역과 기준을 먼저 확인하시면 좋습니다."),
+    ("서울·경기·인천은 예약 기준이 다른가요?",
+     "네. 서울은 지하철역과 생활권이 촘촘하고, 경기는 시군 범위가 넓어 차량 이동 기준이 중요하며, 인천은 원도심·신도시·공항·도서 지역이 함께 있어 사전 확인이 필요합니다. 그래서 지역명보다 안심 예약 기준을 먼저 안내합니다."),
     ("예약 전 꼭 확인해야 할 사항은?",
-     "방문 가능 주소, 예약 가능 시간, 추가 이동비 여부, 건물 출입 방식, 결제 방식을 먼저 확인하고 예약하는 방식이 좋습니다."),
-
-    ("중앙동과 고잔동은 어떻게 다른가요?",
-     "중앙동은 중앙역 중심 상권과 행정 중심지를 중심으로, 고잔동은 호수공원·고잔신도시 주거지를 중심으로 운영됩니다."),
-
+     "방문 가능 주소, 예약 가능 시간, 추가 이동비 여부, 건물 출입 방식, 개인정보 처리 기준을 먼저 확인하고 예약하는 방식이 좋습니다. 예약 전 체크리스트에서 항목을 정리해 두었습니다."),
     ("추가 이동비는 어떻게 계산되나요?",
-     "지역별로 기본 이동권이 정해져 있으며, 그 외 먼 거리는 추가 이동비가 발생할 수 있습니다. 예약 시 정확히 확인하세요."),
+     "서울 도심, 경기 외곽, 인천 공항·도서 지역은 이동 기준이 달라 추가 이동비가 발생할 수 있습니다. 실제 비용은 예약 시 사전에 확인하는 것을 원칙으로 합니다."),
+    ("불법·선정적 서비스도 가능한가요?",
+     "아니요. 간다GO는 건전한 방문 관리 서비스만 운영하며, 불법·선정적 요청에는 어떤 경우에도 응하지 않습니다."),
 ]
 
-# FAQ 스키마 생성
 _faq_schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-        {
-            "@type": "Question",
-            "@id": f"#faq-{i+1}",
-            "name": q,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": a
-            }
-        }
+        {"@type": "Question", "@id": f"#faq-{i+1}", "name": q,
+         "acceptedAnswer": {"@type": "Answer", "text": a}}
         for i, (q, a) in enumerate(_FAQ)
-    ]
+    ],
 }
 
-_faq_schema_str = json.dumps(_faq_schema, ensure_ascii=False, indent=2)
-
-# WebPage 스키마 (메인)
-# 방문형(무점포) 서비스이므로 LocalBusiness 계열 스키마는 사용하지 않는다.
-# 전역 Organization 스키마는 build.py 가 모든 페이지에 자동 주입한다.
 _webpage_schema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "안산 출장마사지｜중앙·고잔·초지·상록수 홈타이 지역 안내",
+    "name": "서울·경기·인천 출장마사지｜수도권 안심 예약·홈타이 지역 안내",
     "description": DESC,
     "url": _BASE + "/",
     "inLanguage": "ko",
     "isPartOf": {"@id": _BASE + "/#organization"},
     "publisher": {"@id": _BASE + "/#organization"},
-    "primaryImageOfPage": {"@id": _BASE + "/#primaryimage"}
+    "primaryImageOfPage": {"@id": _BASE + "/#primaryimage"},
 }
 
-_webpage_schema_str = json.dumps(_webpage_schema, ensure_ascii=False, indent=2)
-
-# ImageObject 스키마 — 선호 썸네일 지정(구글 Discover·검색 노출용)
 _image_schema = {
     "@context": "https://schema.org",
     "@type": "ImageObject",
@@ -70,300 +50,159 @@ _image_schema = {
     "contentUrl": _BASE + "/assets/og-image.png",
     "width": 1200,
     "height": 630,
-    "caption": "안산 출장마사지·홈타이 지역 안내 — " + BRAND
+    "caption": "서울·경기·인천 출장마사지·홈타이 지역 안내 — " + BRAND,
 }
 
-_image_schema_str = json.dumps(_image_schema, ensure_ascii=False, indent=2)
-
-# BreadcrumbList 스키마 (메인 페이지는 홈만)
 _breadcrumb_schema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-        {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "홈",
-            "item": _BASE + "/"
-        }
-    ]
+        {"@type": "ListItem", "position": 1, "name": "홈", "item": _BASE + "/"}
+    ],
 }
 
-_breadcrumb_schema_str = json.dumps(_breadcrumb_schema, ensure_ascii=False, indent=2)
-
-_EXTRA_HEAD = f"""<script type="application/ld+json">
-{_webpage_schema_str}
-</script>
-<script type="application/ld+json">
-{_image_schema_str}
-</script>
-<script type="application/ld+json">
-{_breadcrumb_schema_str}
-</script>
-<script type="application/ld+json">
-{_faq_schema_str}
-</script>"""
+_EXTRA_HEAD = "".join(
+    '<script type="application/ld+json">\n' + json.dumps(s, ensure_ascii=False, indent=2) + "\n</script>\n"
+    for s in (_webpage_schema, _image_schema, _breadcrumb_schema, _faq_schema)
+)
 
 _HERO = """<div class="hero">
   <div class="hero-content">
-    <div class="hero-badge">안산시 전지역 방문 관리</div>
-    <h1 class="hero-title">안산 출장마사지<br><span class="hero-accent">안산 홈타이</span><br>지역별 예약 안내</h1>
-    <p class="hero-lead">중앙동, 고잔동, 초지동, 상록수, 선부동, 원곡동 등 안산 주요 생활권별 방문 가능 지역과 예약 전 확인사항을 안내합니다.</p>
+    <div class="hero-badge">서울·경기·인천 수도권 방문 관리</div>
+    <h1 class="hero-title">서울·경기·인천 출장마사지<br><span class="hero-accent">수도권 안심 예약 안내</span></h1>
+    <p class="hero-lead">서울, 경기, 인천 주요 생활권별 방문 가능 지역과 개인정보 기준, 불법·선정적 서비스 불가 안내, 추가 이동비, 이용 장소별 확인사항을 안내합니다.</p>
     <div class="hero-cta">
-      <a href="#coverage" class="btn btn-primary">지역별 안내 보기</a>
-      <a href="#stations" class="btn btn-secondary">가까운 역 찾기</a>
-      <a href="/reservation/" class="btn btn-secondary">예약 안내 보기</a>
-      <a href="/check/" class="btn btn-secondary">이용 전 확인사항</a>
+      <a href="/safe-booking/" class="btn btn-primary">안심 예약 기준</a>
+      <a href="/report/" class="btn btn-secondary">지역 리포트</a>
+      <a href="/seoul/" class="btn btn-secondary">서울 보기</a>
+      <a href="/gyeonggi/" class="btn btn-secondary">경기 보기</a>
+      <a href="/incheon/" class="btn btn-secondary">인천 보기</a>
+      <a href="/contact/" class="btn btn-secondary">문의하기</a>
     </div>
   </div>
   <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-number">2</div>
-      <div class="stat-label">구별 안내</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number">21</div>
-      <div class="stat-label">지역 페이지</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number">13</div>
-      <div class="stat-label">역세권 안내</div>
-    </div>
-    <div class="stat">
-      <div class="stat-number">24H</div>
-      <div class="stat-label">상담 가능</div>
-    </div>
+    <div class="stat"><div class="stat-number">3</div><div class="stat-label">시·도 권역</div></div>
+    <div class="stat"><div class="stat-number">66+</div><div class="stat-label">시군구 안내</div></div>
+    <div class="stat"><div class="stat-number">28</div><div class="stat-label">대표 생활권</div></div>
+    <div class="stat"><div class="stat-number">24H</div><div class="stat-label">상담 가능</div></div>
   </div>
 </div>"""
 
 PAGE = {
     "path": "",
-    "title": "안산 출장마사지｜중앙·고잔·초지·상록수 홈타이 지역 안내",
+    "title": "서울·경기·인천 출장마사지｜수도권 안심 예약·홈타이 지역 안내",
     "desc": DESC,
-    "h1": "안산 출장마사지·홈타이 지역별 예약 안내",
+    "h1": "서울·경기·인천 출장마사지 · 수도권 안심 예약 안내",
     "hero": _HERO,
     "breadcrumb": [],
     "extra_head": _EXTRA_HEAD,
     "body": """
-<section id="criteria">
-  <h2>안산에서 출장마사지를 찾을 때 먼저 확인할 기준</h2>
-  <p>안산시는 경기도 남부에 위치한 도시로, 상록구와 단원구 두 개 구로 나뉘며 각 구의 생활권이 뚜렷하게 구분됩니다. 출장마사지를 예약하기 전에 자신의 위치가 어느 구의 어느 생활권에 해당하는지 정확히 파악하는 것이 예약 과정에서 가장 중요한 첫 번째 단계입니다.</p>
-  <p>상록구는 경기철도의 상록수역, 한대앞역, 사리역 인근과 본오동, 사동, 월피동, 성포동, 부곡동, 반월동 중심으로 구성되어 있습니다. 이곳은 주로 안산시의 북동부와 상록권 생활권으로 알려져 있으며, 한양대학교 에리카 캠퍼스가 위치한 학문과 문화의 거리이기도 합니다. 상록구 지역으로 예약 시에는 상록수역 근처의 교통 접근성과 본오동·사동 일대의 주거 밀집도를 고려하여 방문 주소와 시간을 결정하는 것이 좋습니다.</p>
-  <p>단원구는 중앙역, 고잔역, 초지역, 안산역, 선부역, 원곡역, 원시역 인근과 고잔동, 중앙동, 호수동, 초지동, 원곡동, 선부동, 와동, 신길동, 대부동 중심으로 구성되어 있습니다. 이곳은 주로 안산시의 남서부와 중심권 생활권으로 알려져 있으며, 중앙역을 중심으로 한 상권과 고잔신도시·호수공원의 주거 지역, 그리고 다문화거리로 유명한 원곡동이 포함되어 있습니다. 단원구 지역으로 예약 시에는 중앙역의 접근성, 호수동 일대의 교통 편의성, 그리고 대부도 여행객들의 경우 차량 이동 기준을 미리 확인하는 것이 중요합니다.</p>
-  <p>또한 안산시 전역으로 방문이 가능하며, 자택·숙소·오피스텔 등 다양한 방문 장소에 대응합니다. 예약 전에 자신의 주소가 어느 동에 해당하고, 가장 가까운 지하철역이 무엇인지, 그리고 기본 이동권 범위 내에 있는지를 사전에 확인하면 예약 과정이 훨씬 원활해집니다.</p>
+<section id="intro">
+  <h2>수도권 방문형 서비스는 예약 전 기준 확인이 중요합니다</h2>
+  <p>서울, 경기, 인천은 같은 수도권이라도 지역 구조와 이동 기준이 크게 다릅니다. 서울은 지하철역과 생활권이 촘촘하게 연결되어 있어 역세권과 생활권 중심으로 방문 지역을 확인하는 것이 편리하고, 경기는 시군의 면적이 넓어 같은 시 안에서도 차량 이동 기준이 달라집니다. 인천은 원도심, 신도시, 공항, 도서 지역이 함께 있어 권역별로 사전 확인이 필요합니다.</p>
+  <p>그래서 간다GO는 지역명을 먼저 나열하기보다, 예약 전 확인해야 할 안심 예약 기준과 지역 리포트를 먼저 안내합니다. 아래 순서대로 안심 예약 기준 → 지역 리포트 → 시·도별 안내 → 이용 장소별 기준을 확인하시면 수도권 어디서든 방문 일정을 정확히 잡을 수 있습니다. 모든 서비스는 건전한 방문 관리 기준 안에서만 제공되며, 불법·선정적 요청에는 응하지 않습니다.</p>
 </section>
 
-<section id="coverage">
-  <h2>상록구·단원구 생활권 차이</h2>
+<section id="safe-booking">
+  <h2>예약 전 확인해야 할 안심 예약 기준</h2>
+  <p>지역 페이지보다 먼저, 방문형 서비스 이용 시 확인해야 할 기준을 정리했습니다.</p>
   <div class="card-grid">
-    <a href="/sangnok-gu/" class="card">
-      <h3>상록구</h3>
-      <p>상록수역, 한대앞역, 본오동, 사동, 월피동 중심 생활권</p>
-      <span class="card-arrow">→</span>
-    </a>
-    <a href="/danwon-gu/" class="card">
-      <h3>단원구</h3>
-      <p>중앙역, 고잔역, 초지역, 안산역, 선부동, 원곡동 중심 생활권</p>
-      <span class="card-arrow">→</span>
-    </a>
+    <a href="/safe-booking/first-time/" class="card"><h3>처음 이용하는 분</h3><p>방문 주소·시간·이동비 등 처음 확인할 내용</p><span class="card-arrow">→</span></a>
+    <a href="/safe-booking/privacy-standard/" class="card"><h3>개인정보 처리 기준</h3><p>예약에 필요한 최소 정보만 받는 기준</p><span class="card-arrow">→</span></a>
+    <a href="/safe-booking/service-policy/" class="card"><h3>불법·선정 서비스 불가</h3><p>건전한 방문 관리 서비스 운영 기준</p><span class="card-arrow">→</span></a>
+    <a href="/safe-booking/travel-fee/" class="card"><h3>추가 이동비 기준</h3><p>도심·외곽·공항·도서 이동 기준 안내</p><span class="card-arrow">→</span></a>
+    <a href="/safe-booking/building-access/" class="card"><h3>건물 출입 방식</h3><p>공동현관·오피스텔·숙소 출입 확인</p><span class="card-arrow">→</span></a>
+    <a href="/safe-booking/reschedule/" class="card"><h3>예약 변경 기준</h3><p>예약 변경·취소 절차 안내</p><span class="card-arrow">→</span></a>
   </div>
 </section>
 
-<section id="areas">
-  <h2>안산 대표 지역별 방문 가능 지역 안내</h2>
+<section id="report">
+  <h2>서울·경기·인천 지역 리포트</h2>
+  <p>지역을 단순히 나열하지 않고, 권역 특성별로 방문 기준과 생활권을 정리했습니다.</p>
   <div class="card-grid">
-    <a href="/danwon-gu/jungang-dong/" class="card">
-      <h3>중앙동</h3>
-      <p>중앙역, 고잔동, 안산 중심상권 인접 생활권</p>
-    </a>
-    <a href="/danwon-gu/gojan-dong/" class="card">
-      <h3>고잔동</h3>
-      <p>고잔역, 중앙역, 호수동 인접 생활권</p>
-    </a>
-    <a href="/danwon-gu/choji-dong/" class="card">
-      <h3>초지동</h3>
-      <p>초지역, 단원구청, 고잔신도시 인접 생활권</p>
-    </a>
-    <a href="/danwon-gu/wongok-dong/" class="card">
-      <h3>원곡동</h3>
-      <p>안산역, 원곡역, 다문화거리 인접 생활권</p>
-    </a>
-    <a href="/danwon-gu/seonbu-dong/" class="card">
-      <h3>선부동</h3>
-      <p>선부역, 달미역, 와동 인접 생활권</p>
-    </a>
-    <a href="/sangnok-gu/bono-dong/" class="card">
-      <h3>본오동</h3>
-      <p>상록수역, 사동, 이동 인접 생활권</p>
-    </a>
-    <a href="/sangnok-gu/sa-dong/" class="card">
-      <h3>사동</h3>
-      <p>한대앞역, 해양동, 사이동 인접 생활권</p>
-    </a>
-    <a href="/sangnok-gu/wolpi-dong/" class="card">
-      <h3>월피동</h3>
-      <p>성포동, 부곡동, 안산시청 인접 생활권</p>
-    </a>
+    <a href="/report/seoul/" class="card"><h3>서울 리포트</h3><p>역세권·생활권 중심의 도심 권역</p></a>
+    <a href="/report/gyeonggi/" class="card"><h3>경기 리포트</h3><p>넓은 시군·차량 이동 중심 권역</p></a>
+    <a href="/report/incheon/" class="card"><h3>인천 리포트</h3><p>원도심·신도시·공항·도서 혼합 권역</p></a>
+    <a href="/report/downtown/" class="card"><h3>도심형 리포트</h3><p>상권·관광·업무 밀집 도심 권역</p></a>
+    <a href="/report/newtown/" class="card"><h3>신도시형 리포트</h3><p>아파트 대단지·오피스텔 신도시</p></a>
+    <a href="/report/business/" class="card"><h3>업무지구형 리포트</h3><p>오피스·빌딩 밀집 업무 권역</p></a>
+    <a href="/report/airport-island/" class="card"><h3>공항·도서형 리포트</h3><p>공항권·섬 지역 사전 예약 권역</p></a>
+    <a href="/report/outer/" class="card"><h3>외곽 이동형 리포트</h3><p>차량 이동·추가 이동비 권역</p></a>
   </div>
 </section>
 
-<section id="stations">
-  <h2>안산 주요 지하철역별 홈타이 안내</h2>
-  <p>안산시의 주요 지하철역별로 인접한 지역과 예약 기준을 안내합니다. 각 역을 클릭하여 상세 정보를 확인하세요.</p>
-  <div class="card-grid">
-    <a href="/station/sangnoksu-station/" class="card">
-      <h3>상록수역</h3>
-      <p>본오동, 이동 생활권</p>
-    </a>
-    <a href="/station/hanyang-univ-at-ansan-station/" class="card">
-      <h3>한대앞역</h3>
-      <p>사동, 이동 인접 생활권</p>
-    </a>
-    <a href="/station/jungang-station/" class="card">
-      <h3>중앙역</h3>
-      <p>중앙동, 고잔동 생활권</p>
-    </a>
-    <a href="/station/gojan-station/" class="card">
-      <h3>고잔역</h3>
-      <p>고잔동, 호수동 인접권</p>
-    </a>
-    <a href="/station/choji-station/" class="card">
-      <h3>초지역</h3>
-      <p>초지동, 단원구청 생활권</p>
-    </a>
-    <a href="/station/ansan-station/" class="card">
-      <h3>안산역</h3>
-      <p>원곡동, 백운동 생활권</p>
-    </a>
-    <a href="/station/seonbu-station/" class="card">
-      <h3>선부역</h3>
-      <p>선부동, 와동 생활권</p>
-    </a>
-    <a href="/station/wongok-station/" class="card">
-      <h3>원곡역</h3>
-      <p>원곡동, 안산역 인접권</p>
-    </a>
-    <a href="/station/wonsi-station/" class="card">
-      <h3>원시역</h3>
-      <p>원시, 시화공단 인접권</p>
-    </a>
-  </div>
-</section>
-
-<section id="lifestyle">
-  <h2>안산 생활권별 예약 기준</h2>
-  <p>지역과 역을 연결한 생활권 기준으로 예약하면 더 정확한 방문 주소와 이동 시간을 확인할 수 있습니다.</p>
-  <div class="card-grid">
-    <a href="/area/jungang-gojan/" class="card">중앙역·고잔동 출장마사지 생활권 안내</a>
-    <a href="/area/choji-dong/" class="card">초지역·초지동 홈타이 방문 생활권</a>
-    <a href="/area/ansan-station-wongok/" class="card">안산역·원곡동 출장마사지 생활권</a>
-    <a href="/area/sangnoksu-bono/" class="card">상록수역·본오동 홈타이 생활권</a>
-    <a href="/area/seonbu-station/" class="card">선부역·선부동 출장마사지 생활권</a>
-  </div>
-</section>
-
-<section id="references">
-  <h2>안산 지역 정보 공식 출처</h2>
-  <p>방문 지역의 행정·교통 정보는 아래 공식 기관 자료를 함께 참고하시면 정확합니다. 본 사이트의 생활권·역세권 안내는 이러한 공개 행정 정보를 기준으로 정리했습니다.</p>
-  <ul>
-    <li><a href="https://www.ansan.go.kr/" target="_blank" rel="noopener nofollow">안산시청 공식 홈페이지</a> — 안산시 행정구역(상록구·단원구) 및 지역 정보</li>
-    <li><a href="https://www.letskorail.com/" target="_blank" rel="noopener nofollow">한국철도공사(코레일)</a> — 4호선·수인분당선 안산 구간 역 정보</li>
-    <li><a href="https://www.data.go.kr/" target="_blank" rel="noopener nofollow">공공데이터포털</a> — 행정동·생활권 통계 자료</li>
-  </ul>
-</section>
-
-<section id="topics">
-  <h2>주제별로 찾는 안산 출장마사지·홈타이 안내</h2>
-  <p>원하시는 역세권, 생활권, 이용 장소 주제에 맞춰 상세 페이지로 바로 이동할 수 있습니다. 각 페이지에는 방문 가능 지역, 가까운 역, 안심 예약 기준, 자주 묻는 질문이 정리되어 있습니다.</p>
+<section id="life">
+  <h2>수도권 주요 생활권 안내</h2>
+  <p>서울·경기·인천의 대표 생활권별로 방문 가능 지역과 가까운 역을 확인할 수 있습니다.</p>
   <div class="linkhub">
     <div class="linkhub-col">
-      <h3>역세권별 출장마사지</h3>
+      <h3>서울 대표 생활권</h3>
       <ul>
-        <li><a href="/station/jungang-station/">중앙역 중심상권 출장마사지 역세권 안내</a></li>
-        <li><a href="/station/gojan-station/">고잔역 호수공원 인근 홈타이 안내</a></li>
-        <li><a href="/station/choji-station/">초지역 트리플 환승 역세권 출장마사지</a></li>
-        <li><a href="/station/ansan-station/">안산역 원곡동 다문화상권 출장마사지</a></li>
-        <li><a href="/station/sangnoksu-station/">상록수역 본오동 생활권 홈타이 안내</a></li>
-        <li><a href="/station/hanyang-univ-at-ansan-station/">한대앞역 ERICA 대학가 출장마사지</a></li>
-        <li><a href="/station/seonbu-station/">선부역 서해선 주거권 출장마사지</a></li>
-        <li><a href="/station/wongok-station/">원곡역 다문화거리 홈타이 안내</a></li>
-        <li><a href="/station/wonsi-station/">원시역 반월·시화산단 출장마사지</a></li>
+        <li><a href="/seoul/life/gangnam-yeoksam/">강남역·역삼 출장마사지 생활권</a></li>
+        <li><a href="/seoul/life/jamsil-songpa/">잠실·송파 홈타이 생활권</a></li>
+        <li><a href="/seoul/life/hongdae-hapjeong/">홍대·합정 출장마사지 생활권</a></li>
+        <li><a href="/seoul/life/yeouido-yeongdeungpo/">여의도·영등포 업무권 안내</a></li>
+        <li><a href="/seoul/life/seongsu-wangsimni/">성수·왕십리 생활권 안내</a></li>
+        <li><a href="/seoul/life/yongsan-seoul-station/">용산·서울역 숙소 인접권</a></li>
       </ul>
     </div>
     <div class="linkhub-col">
-      <h3>단원구 지역별 안내</h3>
+      <h3>경기 대표 생활권</h3>
       <ul>
-        <li><a href="/danwon-gu/jungang-dong/">중앙동 중심상권 출장마사지 생활권</a></li>
-        <li><a href="/danwon-gu/gojan-dong/">고잔동 호수공원·신도시 홈타이 안내</a></li>
-        <li><a href="/danwon-gu/choji-dong/">초지동 트리플 역세권 출장마사지</a></li>
-        <li><a href="/danwon-gu/wongok-dong/">원곡동 다문화특구 출장마사지 안내</a></li>
-        <li><a href="/danwon-gu/seonbu-dong/">선부동 서해선 주거권 홈타이 안내</a></li>
-        <li><a href="/danwon-gu/hasu-dong/">호수동 안산호수공원 인근 출장마사지</a></li>
-        <li><a href="/danwon-gu/daebu-dong/">대부도 펜션·숙소 방문 출장마사지</a></li>
+        <li><a href="/gyeonggi/life/suwon-station-ingye/">수원역·인계동 출장마사지 생활권</a></li>
+        <li><a href="/gyeonggi/life/bundang-pangyo/">분당·판교 신도시 홈타이</a></li>
+        <li><a href="/gyeonggi/life/dongtan-newtown/">동탄신도시 출장마사지 안내</a></li>
+        <li><a href="/gyeonggi/life/bucheon-station-sangdong/">부천역·상동 역세권 안내</a></li>
+        <li><a href="/gyeonggi/life/ilsan-kintex/">일산·킨텍스 생활권 안내</a></li>
+        <li><a href="/gyeonggi/life/hanam-misa/">하남·미사 신도시 홈타이</a></li>
       </ul>
     </div>
     <div class="linkhub-col">
-      <h3>상록구 지역별 안내</h3>
+      <h3>인천 대표 생활권</h3>
       <ul>
-        <li><a href="/sangnok-gu/bono-dong/">본오동 상록수역 대단지 출장마사지</a></li>
-        <li><a href="/sangnok-gu/sa-dong/">사동 ERICA 대학가 홈타이 안내</a></li>
-        <li><a href="/sangnok-gu/wolpi-dong/">월피동 상업·주거 혼합권 출장마사지</a></li>
-        <li><a href="/sangnok-gu/sai-dong/">사이동 조용한 주거 생활권 홈타이</a></li>
-        <li><a href="/sangnok-gu/il-dong/">일동 생활 상권 출장마사지 안내</a></li>
-        <li><a href="/sangnok-gu/i-dong/">이동 상록수역 배후 주거 홈타이</a></li>
-        <li><a href="/sangnok-gu/haeyang-dong/">해양동 상록구 수변 생활권 안내</a></li>
+        <li><a href="/incheon/life/songdo-international-city/">송도국제도시 출장마사지 안내</a></li>
+        <li><a href="/incheon/life/guwol-incheon-cityhall/">구월·인천시청 생활권 안내</a></li>
+        <li><a href="/incheon/life/bupyeong-station-market/">부평역·부평시장 역세권</a></li>
+        <li><a href="/incheon/life/cheongna-international-city/">청라국제도시 홈타이 안내</a></li>
+        <li><a href="/incheon/life/yeongjong-unseo/">영종·운서 공항권 안내</a></li>
+        <li><a href="/incheon/life/incheon-airport/">인천공항 인근 숙소 안내</a></li>
       </ul>
     </div>
     <div class="linkhub-col">
-      <h3>생활권·이용 장소별 안내</h3>
+      <h3>이용 장소별 안내</h3>
       <ul>
-        <li><a href="/area/jungang-gojan/">중앙역·고잔동 생활권 출장마사지</a></li>
-        <li><a href="/area/choji-dong/">초지역·초지동 홈타이 생활권 안내</a></li>
-        <li><a href="/area/ansan-station-wongok/">안산역·원곡동 생활권 출장마사지</a></li>
-        <li><a href="/area/sangnoksu-bono/">상록수·본오동 생활권 홈타이 안내</a></li>
-        <li><a href="/area/hanyang-univ-sa-dong/">한대앞·사동 대학가 생활권 안내</a></li>
-        <li><a href="/area/daebu-island/">대부도 섬 관광권 방문 출장마사지</a></li>
-        <li><a href="/reservation/">처음 이용자 출장마사지 예약 방법</a></li>
-        <li><a href="/check/">야간 예약 전 안심 확인사항 안내</a></li>
+        <li><a href="/use/home/">자택 이용 출장마사지 기준</a></li>
+        <li><a href="/use/hotel/">호텔·숙소 이용 홈타이 안내</a></li>
+        <li><a href="/use/officetel/">오피스텔 이용 출장마사지</a></li>
+        <li><a href="/use/business-district/">업무지구 이용 안내</a></li>
+        <li><a href="/use/night/">야간 예약 안심 안내</a></li>
+        <li><a href="/use/outer-area/">외곽 지역 이용 안내</a></li>
       </ul>
     </div>
   </div>
 </section>
 
-<section id="check">
-  <h2>안산 홈타이 예약 전 확인사항</h2>
-  <p>예약을 진행하기 전에 다음 항목들을 먼저 확인하면 예약 과정이 훨씬 수월합니다.</p>
+<section id="checklist">
+  <h2>문의 전 확인하면 좋은 내용</h2>
+  <p>예약·문의 전에 아래 항목을 먼저 확인하면 방문 일정이 훨씬 정확해집니다.</p>
   <ul>
-    <li><strong>방문 가능 주소 확인</strong> - 자택, 숙소, 오피스텔 등 정확한 방문 주소와 건물 유형 확인</li>
-    <li><strong>예약 가능 시간 확인</strong> - 희망 예약 시간이 가능한지 미리 확인</li>
-    <li><strong>추가 이동비 여부 확인</strong> - 기본 이동권 외 추가 이동비 발생 여부</li>
-    <li><strong>건물 출입 방식 확인</strong> - 공동현관, 자동문, 경비 확인 등</li>
-    <li><strong>자택·숙소·오피스텔 이용 기준 확인</strong> - 서비스 제공 장소 기준</li>
-    <li><strong>결제 방식 확인</strong> - 현금, 계좌이체, 카드 등 가능한 결제 수단</li>
-    <li><strong>예약 변경·취소 기준 확인</strong> - 변경·취소 수수료 및 절차</li>
-    <li><strong>개인정보 처리 기준 확인</strong> - 개인정보 수집·이용·보관 방식</li>
-    <li><strong>불법·선정적 서비스 불가 안내</strong> - 건전한 관리 서비스만 제공</li>
+    <li>방문 주소를 정확히 확인했나요? (단지명·동·호수 또는 건물명·호실)</li>
+    <li>공동현관 또는 건물 출입 방식이 있나요?</li>
+    <li>호텔·숙소 이용 가능 여부를 확인했나요?</li>
+    <li>오피스텔 관리 규정이 있나요?</li>
+    <li>주차 또는 차량 이동이 필요한 지역인가요?</li>
+    <li>외곽 지역 추가 이동비가 있는지 확인했나요?</li>
+    <li>공항·도서 지역 사전 예약이 필요한가요?</li>
+    <li>예약 변경 기준을 확인했나요?</li>
+    <li>개인정보 처리 기준을 확인했나요?</li>
+    <li><a href="/safe-booking/service-policy/">불법·선정적 서비스 불가 안내</a>를 확인했나요?</li>
   </ul>
 </section>
 
 <section id="faq">
-  <h2>안산 출장마사지 자주 묻는 질문</h2>
+  <h2>수도권 출장마사지 자주 묻는 질문</h2>
   <dl class="faq-list">
-    <dt id="faq-1">안산 출장마사지는 어떤 서비스인가요?</dt>
-    <dd>방문형 마사지 서비스로, 고객의 자택, 숙소, 오피스텔 등으로 전문가가 방문하여 관리하는 서비스입니다. 상록구와 단원구 전지역으로 방문 가능합니다.</dd>
-
-    <dt id="faq-2">상록구와 단원구의 생활권 차이가 뭔가요?</dt>
-    <dd>상록구는 상록수역, 한대앞역, 본오동, 사동 중심의 북동부 생활권이고, 단원구는 중앙역, 고잔역, 초지역, 안산역 중심의 남서부·중심권 생활권입니다.</dd>
-
-    <dt id="faq-3">예약 전 꼭 확인해야 할 사항은?</dt>
-    <dd>방문 가능 주소, 예약 가능 시간, 추가 이동비 여부, 건물 출입 방식, 결제 방식을 먼저 확인하고 예약하는 방식이 좋습니다.</dd>
-
-    <dt id="faq-4">중앙동과 고잔동은 어떻게 다른가요?</dt>
-    <dd>중앙동은 중앙역 중심 상권과 행정 중심지를 중심으로, 고잔동은 호수공원·고잔신도시 주거지를 중심으로 운영됩니다.</dd>
-
-    <dt id="faq-5">추가 이동비는 어떻게 계산되나요?</dt>
-    <dd>지역별로 기본 이동권이 정해져 있으며, 그 외 먼 거리는 추가 이동비가 발생할 수 있습니다. 예약 시 정확히 확인하세요.</dd>
-  </dl>
+""" + "".join(f"    <dt id=\"faq-{i+1}\">{q}</dt>\n    <dd>{a}</dd>\n" for i, (q, a) in enumerate(_FAQ)) + """  </dl>
 </section>
-"""
+""",
 }
